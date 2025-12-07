@@ -24,13 +24,14 @@ def visualize_renovation():
 
         # Run the "Instruct-Pix2Pix" model
         # This model is famous for: "Turn the apples into oranges" style edits
+        # Run the "Instruct-Pix2Pix" model (Updated Version ID)
         output = replicate.run(
-            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee29752186756c48f57f5525242b5054876c",
+            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
             input={
                 "image": image_url,
                 "prompt": user_prompt,
                 "num_inference_steps": 20,
-                "image_guidance_scale": 1.5, # Keeps original structure
+                "image_guidance_scale": 1.5,
             }
         )
         
