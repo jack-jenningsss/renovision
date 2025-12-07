@@ -307,27 +307,36 @@
   }
 
   // --- MOCK BACKEND PROCESSING ---
-  function processAI() {
+// INSIDE THE WIDGET SCRIPT:
+  async function processAI() {
     chatState = 'processing';
-    addMessage(`<div class="spinner"></div> Generating your visualization...`, 'bot');
+    addMessage(`<div class="spinner"></div> Creating your vision with Gemini Nano...`, 'bot');
 
-    // SIMULATION: In a real app, you would Fetch() to your Python backend here.
-    // We will simulate a 3-second delay.
-    setTimeout(() => {
-        // Remove spinner (optional logic needed in real code)
-        addMessage("<b>Success!</b> Here is what your renovation could look like:", 'bot');
-        
-        // This is a dummy image for demo purposes. 
-        // In production, this URL comes from your API.
-        const mockResultImage = "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=400&q=80"; 
-        
-        addMessage(mockResultImage, 'bot', true);
-        addMessage(`We have sent a high-res copy and a quote to <b>${userData.email}</b>. Would you like to book a site visit?`, 'bot');
-        
-        // Lead Gen Payload (Log this to console to show it works)
-        console.log("LEAD CAPTURED:", userData);
-        
-    }, 3000);
+    try {
+        const response = await fetch('https://renovision-1.onrender.com/visualize', { 
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                image: userData.photo,
+                prompt: userData.prompt,
+                email: userData.email
+            })
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            addMessage("<b>Here is your renovation:</b>", 'bot');
+            addMessage(data.image, 'bot', true); // Displays the real AI image
+            addMessage(`We've sent a copy to <b>${userData.email}</b>.`, 'bot');
+        } else {
+            addMessage("⚠️ TECHNICAL ERROR: " + data.message, 'bot');
+        }
+
+    } catch (error) {
+        console.error(error);
+        addMessage("Connection error. Please try again later.", 'bot');
+    }
   }
 
 </script>
