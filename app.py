@@ -1,68 +1,50 @@
 import os
-import base64
+import replicate
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from google import genai
-from google.genai import types
 
 app = Flask(__name__)
 CORS(app)
 
-# We get the key from the environment variable (safe storage)
-api_key = os.environ.get("GOOGLE_API_KEY")
-client = genai.Client(api_key=api_key)
-
 @app.route('/')
 def home():
-    return "TradeVision AI is Running!"
+    return "TradeVision AI (Replicate Edition) is Running!"
 
 @app.route('/visualize', methods=['POST'])
 def visualize_renovation():
     try:
         data = request.json
-        image_data = data.get('image')
+        image_url = data.get('image') # The widget sends a data URI
         user_prompt = data.get('prompt')
 
-        if not image_data or not user_prompt:
+        if not image_url or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-        # Clean up the base64 string
-        if "base64," in image_data:
-            image_data = image_data.split("base64,")[1]
+        print("Sending to Replicate...")
 
-        img_bytes = base64.b64decode(image_data)
-
-        # Call Google Gemini
-        response = client.models.generate_content(
-            model="gemini-2.0-flash",
-            contents=[
-                types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"),
-                f"Edit this image: {user_prompt}. Keep the structure of the house exactly the same. Photorealistic, high quality."
-            ]
+        # Run the "Instruct-Pix2Pix" model
+        # This model is famous for: "Turn the apples into oranges" style edits
+        output = replicate.run(
+            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee29752186756c48f57f5525242b5054876c",
+            input={
+                "image": image_url,
+                "prompt": user_prompt,
+                "num_inference_steps": 20,
+                "image_guidance_scale": 1.5, # Keeps original structure
+            }
         )
-
-        if response.text:
-            # Note: Sometimes Gemini returns text if it refuses the image.
-            # But usually for valid edits, it returns inline_data.
-            pass 
-
-        # Extract Image
-        # (Gemini 2.0 Flash usually returns the image in the response parts)
-        # For simplicity in this snippet we assume success if we get here.
-        # In a full production app, we would add more error checking.
-
-        # Re-encode to send back to browser
-        if hasattr(response, 'inline_data') and response.inline_data:
-             generated_b64 = base64.b64encode(response.inline_data.data).decode('utf-8')
-             return jsonify({
+        
+        # Replicate returns a list of URL(s)
+        if output and len(output) > 0:
+            return jsonify({
                 "status": "success", 
-                "image": f"data:image/jpeg;base64,{generated_b64}"
-             })
-
-        # Fallback if the model returns a link or other format
-        return jsonify({"status": "error", "message": "AI finished but returned no image data."})
+                "image": output[0] # The URL of the new image
+            })
+        else:
+            return jsonify({"status": "error", "message": "Replicate returned no image."})
 
     except Exception as e:
+        print(f"Error: {e}")
         return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == '__main__':
