@@ -8,7 +8,7 @@ CORS(app)
 
 @app.route('/')
 def home():
-    return "TradeVision AI (Replicate Edition) is Running!"
+    return "TradeVision AI (Updated) is Running!"
 
 @app.route('/visualize', methods=['POST'])
 def visualize_renovation():
@@ -22,33 +22,39 @@ def visualize_renovation():
 
         print(f"Processing prompt: {user_prompt}")
 
-        # 1. Get the model dynamically (so we don't need a hardcoded Version ID)
+        # 1. Get the latest version ID dynamically
         model = replicate.models.get("timothybrooks/instruct-pix2pix")
-        version = model.latest_version  # <--- This automatically grabs the correct ID
-
-        # 2. Run the prediction using the version object
-        output = version.predict(
-            image=image_url,
-            prompt=user_prompt,
-            num_inference_steps=20,
-            image_guidance_scale=1.5,
+        version = model.latest_version
+        
+        # 2. Run using the modern "replicate.run" command
+        # We construct the ID manually: "owner/model:version_id"
+        model_id = f"timothybrooks/instruct-pix2pix:{version.id}"
+        
+        output = replicate.run(
+            model_id,
+            input={
+                "image": image_url,
+                "prompt": user_prompt,
+                "num_inference_steps": 20,
+                "image_guidance_scale": 1.5,
+            },
+            # CRITICAL FIX: This forces Replicate to give us a URL string
+            # instead of a file stream (which would crash your JSON)
+            use_file_output=False 
         )
         
-        # Replicate usually returns a list of URLs or a single URL
+        # Replicate returns a list of URLs
         if output:
-            # If it's a list, grab the first item. If it's a string, use it directly.
-            result_url = output[0] if isinstance(output, list) else output
             return jsonify({
                 "status": "success", 
-                "image": result_url
+                "image": output[0] # Grab the first URL
             })
         else:
             return jsonify({"status": "error", "message": "Replicate returned no image."})
 
     except replicate.exceptions.ReplicateError as e:
-        # This catches specific account errors (like missing billing)
-        print(f"Replicate Error: {e}")
-        return jsonify({"status": "error", "message": "Billing/Account Error: Check Replicate dashboard."})
+        print(f"Replicate API Error: {e}")
+        return jsonify({"status": "error", "message": "Replicate Billing or API Error."})
     except Exception as e:
         print(f"General Error: {e}")
         return jsonify({"status": "error", "message": str(e)})
