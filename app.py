@@ -14,38 +14,43 @@ def home():
 def visualize_renovation():
     try:
         data = request.json
-        image_url = data.get('image') # The widget sends a data URI
+        image_url = data.get('image')
         user_prompt = data.get('prompt')
 
         if not image_url or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-        print("Sending to Replicate...")
+        print(f"Processing prompt: {user_prompt}")
 
-        # Run the "Instruct-Pix2Pix" model
-        # This model is famous for: "Turn the apples into oranges" style edits
-        # Run the "Instruct-Pix2Pix" model (Updated Version ID)
-        output = replicate.run(
-            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
-            input={
-                "image": image_url,
-                "prompt": user_prompt,
-                "num_inference_steps": 20,
-                "image_guidance_scale": 1.5,
-            }
+        # 1. Get the model dynamically (so we don't need a hardcoded Version ID)
+        model = replicate.models.get("timothybrooks/instruct-pix2pix")
+        version = model.latest_version  # <--- This automatically grabs the correct ID
+
+        # 2. Run the prediction using the version object
+        output = version.predict(
+            image=image_url,
+            prompt=user_prompt,
+            num_inference_steps=20,
+            image_guidance_scale=1.5,
         )
         
-        # Replicate returns a list of URL(s)
-        if output and len(output) > 0:
+        # Replicate usually returns a list of URLs or a single URL
+        if output:
+            # If it's a list, grab the first item. If it's a string, use it directly.
+            result_url = output[0] if isinstance(output, list) else output
             return jsonify({
                 "status": "success", 
-                "image": output[0] # The URL of the new image
+                "image": result_url
             })
         else:
             return jsonify({"status": "error", "message": "Replicate returned no image."})
 
+    except replicate.exceptions.ReplicateError as e:
+        # This catches specific account errors (like missing billing)
+        print(f"Replicate Error: {e}")
+        return jsonify({"status": "error", "message": "Billing/Account Error: Check Replicate dashboard."})
     except Exception as e:
-        print(f"Error: {e}")
+        print(f"General Error: {e}")
         return jsonify({"status": "error", "message": str(e)})
 
 if __name__ == '__main__':
