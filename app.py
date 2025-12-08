@@ -1,22 +1,21 @@
 import os
 import replicate
-import httpx # Required for the timeout fix
+import httpx
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# SETUP: Create a client with a LONG timeout (5 minutes instead of 1)
-# This prevents the "Connection Error" during the Cold Boot
+# Setup Replicate Client with a long timeout (Gemini can take 10-20s)
 client = replicate.Client(
     api_token=os.environ.get("REPLICATE_API_TOKEN"),
-    timeout=httpx.Timeout(300.0, connect=60.0) # Wait 300 seconds (5 mins)
+    timeout=httpx.Timeout(300.0, connect=60.0)
 )
 
 @app.route('/')
 def home():
-    return "TradeVision AI (Long Timeout Edition) is Running!"
+    return "TradeVision AI (Nano Banana Edition) is Running!"
 
 @app.route('/visualize', methods=['POST'])
 def visualize_renovation():
@@ -28,33 +27,33 @@ def visualize_renovation():
         if not image_url or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-print(f"Processing prompt: {user_prompt}")
+        print(f"Processing with Nano Banana: {user_prompt}")
 
-        # Run with the stable ID
+        # NANO BANANA (Gemini 2.5 Flash Image)
+        # It works best with a clear, conversational instruction.
         output = client.run(
-            "timothybrooks/instruct-pix2pix:30c1d0b916a6f8efce20493f5d61ee27491ab2a60437c13c588468b9810ec23f",
+            "google/nano-banana",
             input={
                 "image": image_url,
-                "prompt": user_prompt,
-                "num_inference_steps": 20,
-                # --- THE FIX IS HERE ---
-                "image_guidance_scale": 5.5, # Increased from 1.5 to keep more original details
-                "guidance_scale": 7.5,       # Added to balance the instruction strength
-                # -----------------------
-            },
-            use_file_output=False
+                "prompt": f"Edit this image of a house. {user_prompt}. Maintain photorealism and keeping the original structure exactly the same.",
+                "output_format": "jpg"
+            }
         )
         
+        # Google models on Replicate typically return a single string URL (not a list)
+        # But we check both just in case.
         if output:
+            result_url = output[0] if isinstance(output, list) else output
             return jsonify({
                 "status": "success", 
-                "image": output[0]
+                "image": result_url
             })
         else:
-            return jsonify({"status": "error", "message": "Replicate returned no image."})
+            return jsonify({"status": "error", "message": "AI returned no image."})
 
     except replicate.exceptions.ReplicateError as e:
         print(f"Replicate Error: {e}")
+        # This catches the 422 error if the input schema is slightly different
         return jsonify({"status": "error", "message": str(e)})
     except Exception as e:
         print(f"General Error: {e}")
