@@ -7,15 +7,15 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Setup Replicate Client with a long timeout
+# Setup Replicate Client
 client = replicate.Client(
     api_token=os.environ.get("REPLICATE_API_TOKEN"),
-    timeout=httpx.Timeout(300.0, connect=60.0)
+    timeout=httpx.Timeout(100.0, connect=60.0) # Matches Render's timeout
 )
 
 @app.route('/')
 def home():
-    return "TradeVision AI (Flux Edition) is Running!"
+    return "TradeVision AI (SDXL Edition) is Running!"
 
 @app.route('/visualize', methods=['POST'])
 def visualize_renovation():
@@ -27,30 +27,30 @@ def visualize_renovation():
         if not image_url or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-        print(f"Processing with Flux: {user_prompt}")
+        print(f"Processing with SDXL: {user_prompt}")
 
-        # FLUX.1 [Fill] - The Best "Structure Aware" Editor
-        # We use a lower 'guidance' to keep the house shape, but high enough to change materials.
+        # STABLE DIFFUSION XL (SDXL)
+        # We use 'prompt_strength' to balance structure vs. creativity.
         output = client.run(
-            "black-forest-labs/flux-fill-dev",
+            "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
             input={
                 "image": image_url,
-                "prompt": f"High resolution photo of a house. {user_prompt}. Photorealistic, architectural photography, 8k.",
-                "guidance": 30,         # Controls how strictly it follows the prompt
-                "output_format": "jpg"
+                "prompt": f"Professional architectural photography of a house, {user_prompt}. 8k, photorealistic, high detail.",
+                "prompt_strength": 0.5, # <--- KEY SETTING (0.1 = subtle, 1.0 = wild)
+                "num_inference_steps": 40,
+                "refine": "expert_ensemble_refiner" # Adds that crisp "expensive" look
             }
         )
         
-        # Flux usually returns a generic file object or URL
+        # SDXL returns a list of URLs
         if output:
-            # Handle list vs string output
             result = output[0] if isinstance(output, list) else output
             return jsonify({
                 "status": "success", 
                 "image": str(result)
             })
         else:
-            return jsonify({"status": "error", "message": "Flux returned no image."})
+            return jsonify({"status": "error", "message": "AI returned no image."})
 
     except replicate.exceptions.ReplicateError as e:
         print(f"Replicate Error: {e}")
