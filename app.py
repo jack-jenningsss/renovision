@@ -38,7 +38,7 @@ print(f"Processing prompt: {user_prompt}")
                 "prompt": user_prompt,
                 "num_inference_steps": 20,
                 # --- THE FIX IS HERE ---
-                "image_guidance_scale": 2.5, # Increased from 1.5 to keep more original details
+                "image_guidance_scale": 5.5, # Increased from 1.5 to keep more original details
                 "guidance_scale": 7.5,       # Added to balance the instruction strength
                 # -----------------------
             },
