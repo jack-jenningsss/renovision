@@ -7,10 +7,10 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-# Setup Replicate Client
+# Setup Replicate Client with a timeout that matches Render's limit
 client = replicate.Client(
     api_token=os.environ.get("REPLICATE_API_TOKEN"),
-    timeout=httpx.Timeout(100.0, connect=60.0) # Matches Render's timeout
+    timeout=httpx.Timeout(100.0, connect=60.0) 
 )
 
 @app.route('/')
