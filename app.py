@@ -1,53 +1,58 @@
 import os
 import replicate
-import httpx
+import base64
+import io  # Required to create "virtual files"
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
 app = Flask(__name__)
 CORS(app)
 
-# Setup Replicate Client with a timeout that matches Render's limit
-client = replicate.Client(
-    api_token=os.environ.get("REPLICATE_API_TOKEN"),
-    timeout=httpx.Timeout(100.0, connect=60.0) 
-)
-
 @app.route('/')
 def home():
-    return "TradeVision AI (SDXL Edition) is Running!"
+    return "TradeVision AI (Nano Banana Edition) is Running!"
 
 @app.route('/visualize', methods=['POST'])
 def visualize_renovation():
     try:
         data = request.json
-        image_url = data.get('image')
+        image_data = data.get('image') # This is the base64 string from the widget
         user_prompt = data.get('prompt')
 
-        if not image_url or not user_prompt:
+        if not image_data or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-        print(f"Processing with SDXL: {user_prompt}")
+        print(f"Processing with Nano Banana: {user_prompt}")
 
-        # STABLE DIFFUSION XL (SDXL)
-        # We use 'prompt_strength' to balance structure vs. creativity.
-        output = client.run(
-            "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+        # 1. CLEAN & DECODE THE IMAGE
+        # The widget sends "data:image/jpeg;base64,..." - we need to strip the header
+        if "base64," in image_data:
+            image_data = image_data.split("base64,")[1]
+        
+        # Decode the string into raw bytes
+        image_bytes = base64.b64decode(image_data)
+        
+        # Create a "Virtual File" in memory (The AI thinks this is a real file on disk)
+        virtual_file = io.BytesIO(image_bytes)
+
+        # 2. RUN THE MODEL (Exact logic from your working script)
+        # Note: We use 'use_file_output=False' to fix the "JSON Serializable" crash
+        output = replicate.run(
+            "google/nano-banana",
             input={
-                "image": image_url,
-                "prompt": f"Professional architectural photography of a house, {user_prompt}. 8k, photorealistic, high detail.",
-                "prompt_strength": 0.7, # <--- KEY SETTING (0.1 = subtle, 1.0 = wild)
-                "num_inference_steps": 40,
-                "refine": "expert_ensemble_refiner" # Adds that crisp "expensive" look
-            }
+                "prompt": f"Edit this image: {user_prompt}",
+                "image_input": [virtual_file] # Passing it as a list, just like your script
+            },
+            use_file_output=False # CRITICAL: Forces Replicate to give us a URL string
         )
         
-        # SDXL returns a list of URLs
+        # 3. HANDLE THE OUTPUT
         if output:
-            result = output[0] if isinstance(output, list) else output
+            # Replicate returns a list of URLs (e.g. ['https://...'])
+            result_url = output[0] if isinstance(output, list) else output
             return jsonify({
                 "status": "success", 
-                "image": str(result)
+                "image": result_url
             })
         else:
             return jsonify({"status": "error", "message": "AI returned no image."})
