@@ -28,7 +28,7 @@ def visualize_renovation():
         if not image_url or not user_prompt:
             return jsonify({"status": "error", "message": "Missing image or prompt"}), 400
 
-        print(f"Processing prompt: {user_prompt}")
+print(f"Processing prompt: {user_prompt}")
 
         # Run with the stable ID
         output = client.run(
@@ -37,7 +37,10 @@ def visualize_renovation():
                 "image": image_url,
                 "prompt": user_prompt,
                 "num_inference_steps": 20,
-                "image_guidance_scale": 1.5,
+                # --- THE FIX IS HERE ---
+                "image_guidance_scale": 2.5, # Increased from 1.5 to keep more original details
+                "guidance_scale": 7.5,       # Added to balance the instruction strength
+                # -----------------------
             },
             use_file_output=False
         )
