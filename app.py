@@ -36,7 +36,7 @@ def visualize_renovation():
             input={
                 "image": image_url,
                 "prompt": f"Professional architectural photography of a house, {user_prompt}. 8k, photorealistic, high detail.",
-                "prompt_strength": 0.5, # <--- KEY SETTING (0.1 = subtle, 1.0 = wild)
+                "prompt_strength": 0.7, # <--- KEY SETTING (0.1 = subtle, 1.0 = wild)
                 "num_inference_steps": 40,
                 "refine": "expert_ensemble_refiner" # Adds that crisp "expensive" look
             }
