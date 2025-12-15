@@ -1,0 +1,8 @@
+flask
+flask-cors
+replicate
+requestsflask
+flask-cors
+replicate
+gunicorn
+httpx

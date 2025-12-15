@@ -1,0 +1,32 @@
+# --- Python & Virtual Environments ---
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+env/
+.venv/
+.env
+
+# --- Environment Variables & Secrets (CRITICAL) ---
+.env
+.env.local
+.flaskenv
+
+# --- Temporary Files & Downloads ---
+# Don't commit the house images you generate or download
+output.jpg
+renovated_house.jpg
+temp_*.jpg
+*.tmp
+generation_records.json
+
+# --- Operating System Junk ---
+.DS_Store
+Thumbs.db
+
+# --- IDE Settings (VS Code / PyCharm) ---
+.vscode/
+.idea/
+
+# --- Replicate & API Logs ---
+replicate_cache/
