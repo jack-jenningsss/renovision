@@ -6,3 +6,5 @@ flask-cors
 replicate
 gunicorn
 httpx
+replicate
+requests
