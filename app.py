@@ -2,7 +2,7 @@ import os
 import replicate
 import base64
 import io  # Required to create "virtual files"
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -63,6 +63,11 @@ def visualize_renovation():
     except Exception as e:
         print(f"General Error: {e}")
         return jsonify({"status": "error", "message": str(e)})
+
+@app.route('/widget.js')
+def serve_widget():
+    # This tells Flask: "Look in the current folder for widget.js and send it"
+    return send_from_directory('.', 'widget.js')
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=10000)
