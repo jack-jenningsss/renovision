@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elite Roofs & Renovations | Home</title>
+    <style>
+        /* BASIC WEBSITE STYLING */
+        body { margin: 0; padding: 0; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #333; line-height: 1.6; }
+        
+        /* Navigation */
+        nav { background: #2c3e50; padding: 1rem 2rem; display: flex; justify-content: space-between; align-items: center; color: white; }
+        nav h1 { margin: 0; font-size: 1.5rem; letter-spacing: 1px; }
+        nav ul { list-style: none; display: flex; gap: 20px; margin: 0; }
+        nav a { color: #bdc3c7; text-decoration: none; font-weight: bold; }
+        nav a:hover { color: white; }
+
+        /* Hero Section */
+        .hero { 
+            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1628624747186-a941c476b7ef?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80');
+            background-size: cover; background-position: center; 
+            height: 60vh; display: flex; align-items: center; justify-content: center; text-align: center; color: white; 
+        }
+        .hero-content h2 { font-size: 3rem; margin-bottom: 0.5rem; }
+        .hero-content p { font-size: 1.25rem; margin-bottom: 2rem; }
+        .btn { background: #e67e22; color: white; padding: 15px 30px; text-decoration: none; border-radius: 5px; font-weight: bold; transition: background 0.3s; }
+        .btn:hover { background: #d35400; }
+
+        /* Services Section */
+        .container { max-width: 1100px; margin: 0 auto; padding: 4rem 2rem; }
+        .section-title { text-align: center; margin-bottom: 3rem; }
+        .section-title h3 { font-size: 2rem; color: #2c3e50; margin-bottom: 10px; }
+        .services-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .card { background: #f9f9f9; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }
+        .card h4 { color: #e67e22; margin-top: 0; }
+
+        /* Footer */
+        footer { background: #34495e; color: #bdc3c7; text-align: center; padding: 2rem; margin-top: auto; }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <h1>ELITE ROOFS & RENOVATIONS</h1>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Services</a></li>
+            <li><a href="#">Projects</a></li>
+            <li><a href="#">Contact</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h2>Transform Your Home Today</h2>
+            <p>Premium roofing, joinery, and fittings across the region.</p>
+            <a href="#" class="btn">Get a Free Quote</a>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="section-title">
+            <h3>Our Expertise</h3>
+            <p>We combine traditional craftsmanship with modern visualization technology.</p>
+        </div>
+
+        <div class="services-grid">
+            <div class="card">
+                <h4>🏠 Roofing</h4>
+                <p>From slate repairs to complete re-roofing, we ensure your home is watertight and beautiful.</p>
+            </div>
+            <div class="card">
+                <h4>🔨 Joinery</h4>
+                <p>Bespoke cabinetry, staircases, and timber framing tailored to your exact specifications.</p>
+            </div>
+            <div class="card">
+                <h4>🎨 Visualisation</h4>
+                <p>Not sure what you want? Use our AI tool to see the finished result before we even start.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 Elite Roofs & Renovations Ltd. All rights reserved.</p>
+        <p>123 High Street, Construction City, UK</p>
+    </footer>
+
+    <script src="https://renovision-1.onrender.com/widget.js"></script>
+
+</body>
+</html>
