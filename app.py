@@ -94,7 +94,7 @@ def api_preview():
 
         # 5. Return the result to the widget
         # Replicate returns a list; we want the first image URL
-        return jsonify({'imageUrl': output[0]})
+        return jsonify({'imageUrl': str(output[0])})
 
     except Exception as e:
         print(f"Error: {e}")
