@@ -64,6 +64,42 @@ def visualize_renovation():
         print(f"General Error: {e}")
         return jsonify({"status": "error", "message": str(e)})
 
+@app.route('/api/preview', methods=['POST'])
+def api_preview():
+    try:
+        # 1. Check if image and prompt exist
+        if 'image' not in request.files or 'prompt' not in request.form:
+            return jsonify({'error': 'Missing image or prompt'}), 400
+
+        image_file = request.files['image']
+        prompt_text = request.form['prompt']
+        
+        # 2. Save the image temporarily so Replicate can read it
+        temp_filename = f"temp_{image_file.filename}"
+        image_file.save(temp_filename)
+
+        # 3. Call Replicate (The AI)
+        output = replicate.run(
+            "stability-ai/sdxl:39ed52f2a78e934b3ba6e2a89f5b1c712de7dfea535525255b1aa35c5565e08b",
+            input={
+                "image": open(temp_filename, "rb"),
+                "prompt": prompt_text,
+                "strength": 0.5,  # How much to change the original photo
+                "guidance_scale": 7.5
+            }
+        )
+
+        # 4. Clean up temp file
+        os.remove(temp_filename)
+
+        # 5. Return the result to the widget
+        # Replicate returns a list; we want the first image URL
+        return jsonify({'imageUrl': output[0]})
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/widget.js')
 def serve_widget():
     # This tells Flask: "Look in the current folder for widget.js and send it"
