@@ -84,7 +84,7 @@ def api_preview():
             input={
                 "image": open(temp_filename, "rb"),
                 "prompt": prompt_text,
-                "strength": 0.5,  # How much to change the original photo
+                "strength": 0.8,  # How much to change the original photo
                 "guidance_scale": 7.5
             }
         )
