@@ -181,51 +181,78 @@
     sendBtn.onclick = handleInput;
     inputEl.onkeypress = (e) => { if(e.key === 'Enter') handleInput(); };
 
-    // --- MAIN API LOGIC (UPDATED TO MATCH TEST-WIDGET.HTML) ---
+    // --- MAIN API LOGIC (EXACT MATCH TO TEST-WIDGET.HTML) ---
+    let lastPreviewEl = null;
     async function processPreview() {
-        chatState = 'processing';
-        const loader = addMessage(`<div class="spinner"></div><div>Creating preview...</div>`, 'bot');
+        chatState = 'processing_preview';
+        const loaderHtml = `<div style="display:flex;flex-direction:column;align-items:center;gap:6px;"><div class="spinner"></div><div><b>Creating preview...</b></div><div style="font-size:12px;color:#666;">This may take ~30–60 seconds — please wait.</div></div>`;
+        const loader = addMessage(loaderHtml, 'bot');
         
         try {
-            // Using /visualize (Nano Banana) because you said it works perfectly
             const req = await fetch(`${API_BASE}/visualize`, { 
                 method: 'POST', 
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    image: userData.photo, // Sends Base64
-                    prompt: userData.prompt
+                    image: userData.photo,
+                    prompt: userData.prompt,
+                    email: '' // no email yet for preview
                 })
             });
             const res = await req.json();
             try { loader.remove(); } catch(e){}
 
-            // Handle response
-            const finalImage = res.image || res.imageUrl;
+            if (res.status === 'success' || res.image || res.imageUrl) {
+                addMessage("<b>Preview:</b>", 'bot');
+                const imageSrc = res.image || res.imageUrl || (res.result && res.result[0]);
+                if (imageSrc) {
+                    // Show blurred preview and store reference
+                    lastPreviewEl = addMessage(imageSrc, 'bot', true);
+                    // apply blur to the img inside the returned div
+                    try {
+                        const img = lastPreviewEl.querySelector && lastPreviewEl.querySelector('img');
+                        if (img) {
+                            img.style.filter = 'blur(6px)';
+                            img.style.transition = 'filter 0.4s ease';
+                        }
+                    } catch(e) { /* ignore */ }
+                    // store generated image URL for later reveal
+                    userData.generatedImage = imageSrc;
 
-            if(finalImage) {
-                userData.generatedImage = finalImage;
-                const imgMsg = addMessage(finalImage, 'bot', true);
-                
-                // NO BLUR - Showing you the perfect result immediately
-                
-                addMessage("To receive a copy + Quote Ref, enter your <b>email</b>.", 'bot');
-                chatState = 'awaiting_email';
-                userData.lastPreviewEl = imgMsg;
+                    // Prompt for email so we can send the full image and quote
+                    setTimeout(() => {
+                        addMessage("To receive the full-resolution image and a quote estimate, please enter your <b>email address</b>.", 'bot');
+                        chatState = 'awaiting_email';
+                    }, 600);
+
+                } else {
+                    addMessage("Preview was generated but no URL was returned.", 'bot');
+                    chatState = 'initial';
+                }
+
             } else {
-                addMessage("Error generating image.", 'bot');
+                const errMsg = res.message || JSON.stringify(res);
+                addMessage("⚠️ TECHNICAL ERROR: " + errMsg, 'bot');
                 chatState = 'initial';
             }
         } catch(e) {
             try { loader.remove(); } catch(err){}
             console.error(e);
-            addMessage("Server connection error.", 'bot');
+            addMessage("Connection error. Please try again later.", 'bot');
             chatState = 'initial';
         }
     }
 
     async function sendToMake() {
+        const refNum = 'RV-' + Math.random().toString(36).substring(2,8).toUpperCase();
+        const contactNum = "01234 567890";
+
+        // Unblur the image for the user immediately
+        if (lastPreviewEl) {
+            const img = lastPreviewEl.querySelector('img');
+            if (img) img.style.filter = 'none';
+        }
+
         addMessage("Sending details...", 'bot');
-        const ref = 'RV-' + Math.random().toString(36).substring(2,8).toUpperCase();
         
         try {
             await fetch(MAKE_WEBHOOK, {
@@ -235,16 +262,22 @@
                     email: userData.email,
                     image_url: userData.generatedImage,
                     prompt: userData.prompt,
-                    reference: ref
+                    reference: refNum,
+                    contact: contactNum
                 })
             });
-            addMessage(`✅ Sent! Check inbox: <b>${userData.email}</b>`, 'bot');
-            addMessage(`Ref: <b>${ref}</b>`, 'bot');
+            
+            addMessage(`✅ <b>Sent!</b> We've emailed a copy to <b>${userData.email}</b>.`, 'bot');
+            addMessage(`Your Reference: <b>${refNum}</b><br>Please quote this when calling us at <b>${contactNum}</b>.`, 'bot');
+
             setTimeout(() => {
                 addMessage(`<button class="action-btn" onclick="location.reload()">Start Over 🔄</button>`, 'bot');
-            }, 3000);
+                chatState = 'initial';
+            }, 4000);
+
         } catch(e) {
-            addMessage(`✅ Sent! (Ref: ${ref})`, 'bot');
+            console.error(e);
+            addMessage(`✅ <b>Sent!</b> (Ref: ${refNum})`, 'bot');
         }
     }
 
