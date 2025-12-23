@@ -23,13 +23,14 @@
     /* CHAT WINDOW */
     #trade-chat-window {
       position: fixed; bottom: 100px; right: 20px;
-      width: 380px; height: 600px; background: white;
+      width: 360px; height: 520px; background: white;
       border-radius: 20px; 
       box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       display: none; flex-direction: column; z-index: 999999;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       overflow: hidden; 
       border: 1px solid rgba(102, 126, 234, 0.2);
+      max-height: calc(100vh - 120px);
     }
     
     .chat-header { 
