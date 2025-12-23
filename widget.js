@@ -1,5 +1,5 @@
 (function() {
-  console.log("TradeVision Widget Loading...");
+  console.log("TradeVision Widget Loading... (Nano Banana Edition)");
 
   // --- 1. DEFINE THE CSS STYLES ---
   const css = `
@@ -69,9 +69,7 @@
   document.body.appendChild(container);
 
   // --- 4. ATTACH THE LOGIC ---
-  // Wait 100ms to ensure elements are in the DOM
   setTimeout(() => {
-    // Select Elements
     const launcher = document.getElementById('trade-widget-launcher');
     const windowEl = document.getElementById('trade-chat-window');
     const closeBtn = document.getElementById('close-chat-btn');
@@ -80,16 +78,12 @@
     const sendBtn = document.getElementById('send-btn');
     const fileInput = document.getElementById('image-upload');
     
-    // --- CONFIGURATION ---
-    const API_BASE = "https://renovision-1.onrender.com"; // Your Render Backend
-    // ⚠️ PASTE YOUR MAKE.COM WEBHOOK URL HERE:
+    const API_BASE = "https://renovision-1.onrender.com"; 
     const MAKE_WEBHOOK = "https://hook.eu1.make.com/tbw4om63qcv46ey6uph92pgpnhudi6ys"; 
 
-    // State
     let chatState = 'initial';
     let userData = { photo: null, prompt: null, email: null, generatedImage: null };
 
-    // Toggle Chat
     function toggleChat() {
         const isHidden = windowEl.style.display === 'none' || windowEl.style.display === '';
         windowEl.style.display = isHidden ? 'flex' : 'none';
@@ -98,17 +92,14 @@
     launcher.onclick = toggleChat;
     closeBtn.onclick = toggleChat;
 
-    // Helper: Add Message
     function addMessage(text, sender, isImage = false) {
         const div = document.createElement('div');
         div.className = `message ${sender === 'bot' ? 'bot-msg' : 'user-msg'}`;
-        
         if (isImage) {
             const img = document.createElement('img');
             img.src = text;
             img.className = 'img-preview';
             div.appendChild(img);
-            // Return div to allow manipulation later
             messagesEl.appendChild(div);
             messagesEl.scrollTop = messagesEl.scrollHeight;
             return div; 
@@ -120,7 +111,6 @@
         return div;
     }
 
-    // Init Chat
     function initChat() {
         addMessage("Hi! I'm the AI assistant. How can I help you today?", 'bot');
         setTimeout(() => {
@@ -130,8 +120,6 @@
                 <button class="action-btn" id="btn-support">Ask a Question ❓</button>
               </div>
             `, 'bot');
-            
-            // Attach listeners to dynamic buttons
             setTimeout(() => {
                 const rBtn = document.getElementById('btn-renovate');
                 const sBtn = document.getElementById('btn-support');
@@ -152,15 +140,14 @@
         addMessage(`<button class="action-btn" onclick="document.getElementById('image-upload').click()">📁 Click to Upload Photo</button>`, 'bot');
     }
 
-    // File Upload
     fileInput.onchange = (e) => {
         if(chatState !== 'awaiting_photo') return;
         const file = e.target.files[0];
         if (file) {
-            userData.photo = file;
             const reader = new FileReader();
             reader.onload = (ev) => {
-                addMessage(ev.target.result, 'user', true);
+                userData.photo = ev.target.result; // Keep as Base64 string for Nano Banana
+                addMessage(userData.photo, 'user', true);
                 addMessage("Great photo! What would you like to change?", 'bot');
                 chatState = 'awaiting_prompt';
             };
@@ -168,7 +155,6 @@
         }
     };
 
-    // Input Handling
     function handleInput() {
         const text = inputEl.value.trim();
         if(!text) return;
@@ -176,7 +162,6 @@
         inputEl.value = '';
 
         if(chatState === 'support') {
-            // Basic fallback if you haven't set up OpenAI yet
             setTimeout(() => addMessage("Thanks for asking. Please call us at 01234 567890 for a quote.", 'bot'), 1000);
         }
         else if(chatState === 'awaiting_prompt') {
@@ -196,35 +181,35 @@
     sendBtn.onclick = handleInput;
     inputEl.onkeypress = (e) => { if(e.key === 'Enter') handleInput(); };
 
-    // --- API CALLS ---
-    
+    // --- MAIN API LOGIC (UPDATED TO MATCH TEST-WIDGET.HTML) ---
     async function processPreview() {
         chatState = 'processing';
         const loader = addMessage(`<div class="spinner"></div><div>Creating preview...</div>`, 'bot');
         
-        const formData = new FormData();
-        formData.append('image', userData.photo);
-        formData.append('prompt', userData.prompt);
-        
         try {
-            const req = await fetch(`${API_BASE}/api/preview`, { method: 'POST', body: formData });
+            // Using /visualize (Nano Banana) because you said it works perfectly
+            const req = await fetch(`${API_BASE}/visualize`, { 
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    image: userData.photo, // Sends Base64
+                    prompt: userData.prompt
+                })
+            });
             const res = await req.json();
             try { loader.remove(); } catch(e){}
 
-            if(res.imageUrl) {
-                userData.generatedImage = res.imageUrl;
-                const imgMsg = addMessage(res.imageUrl, 'bot', true);
-                
-                // Blur effect
-                const img = imgMsg.querySelector('img');
-                if(img) { 
-                    img.style.filter = 'blur(5px)';
-                    img.style.transition = 'filter 0.5s ease';
-                }
+            // Handle response
+            const finalImage = res.image || res.imageUrl;
 
-                addMessage("To see the HD result + Reference No, please enter your <b>email</b>.", 'bot');
+            if(finalImage) {
+                userData.generatedImage = finalImage;
+                const imgMsg = addMessage(finalImage, 'bot', true);
+                
+                // NO BLUR - Showing you the perfect result immediately
+                
+                addMessage("To receive a copy + Quote Ref, enter your <b>email</b>.", 'bot');
                 chatState = 'awaiting_email';
-                // Save reference for later
                 userData.lastPreviewEl = imgMsg;
             } else {
                 addMessage("Error generating image.", 'bot');
@@ -232,6 +217,7 @@
             }
         } catch(e) {
             try { loader.remove(); } catch(err){}
+            console.error(e);
             addMessage("Server connection error.", 'bot');
             chatState = 'initial';
         }
@@ -241,12 +227,6 @@
         addMessage("Sending details...", 'bot');
         const ref = 'RV-' + Math.random().toString(36).substring(2,8).toUpperCase();
         
-        // Unblur
-        if(userData.lastPreviewEl) {
-            const img = userData.lastPreviewEl.querySelector('img');
-            if(img) img.style.filter = 'none';
-        }
-
         try {
             await fetch(MAKE_WEBHOOK, {
                 method: 'POST',
@@ -260,15 +240,13 @@
             });
             addMessage(`✅ Sent! Check inbox: <b>${userData.email}</b>`, 'bot');
             addMessage(`Ref: <b>${ref}</b>`, 'bot');
-            
             setTimeout(() => {
                 addMessage(`<button class="action-btn" onclick="location.reload()">Start Over 🔄</button>`, 'bot');
             }, 3000);
-            
         } catch(e) {
             addMessage(`✅ Sent! (Ref: ${ref})`, 'bot');
         }
     }
 
-  }, 100); // End Timeout
+  }, 100);
 })();
