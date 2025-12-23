@@ -6,41 +6,188 @@
     /* FLOATING BUTTON */
     #trade-widget-launcher {
       position: fixed; bottom: 20px; right: 20px;
-      background-color: #0066cc; color: white;
-      width: 60px; height: 60px; border-radius: 50%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      width: 65px; height: 65px; border-radius: 50%;
       border: none; cursor: pointer; z-index: 999999;
-      font-size: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      font-size: 28px; 
+      box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
       display: flex; align-items: center; justify-content: center;
-      transition: transform 0.2s;
+      transition: all 0.3s ease;
     }
-    #trade-widget-launcher:hover { transform: scale(1.05); }
+    #trade-widget-launcher:hover { 
+      transform: scale(1.1); 
+      box-shadow: 0 12px 32px rgba(102, 126, 234, 0.5);
+    }
 
     /* CHAT WINDOW */
     #trade-chat-window {
-      position: fixed; bottom: 90px; right: 20px;
-      width: 350px; height: 500px; background: white;
-      border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+      position: fixed; bottom: 100px; right: 20px;
+      width: 380px; height: 600px; background: white;
+      border-radius: 20px; 
+      box-shadow: 0 10px 40px rgba(0,0,0,0.15);
       display: none; flex-direction: column; z-index: 999999;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      overflow: hidden; border: 1px solid #ccc;
+      overflow: hidden; 
+      border: 1px solid rgba(102, 126, 234, 0.2);
     }
-    .chat-header { background: #0066cc; color: white; padding: 15px; display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-    .chat-messages { flex: 1; padding: 15px; overflow-y: auto; background: #f4f4f4; display: flex; flex-direction: column; gap: 10px; }
-    .chat-input-area { padding: 10px; border-top: 1px solid #eee; display: flex; gap: 10px; background: white; }
-    #chat-input { flex: 1; padding: 8px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-    #send-btn { background: none; border: none; color: #0066cc; font-weight: bold; cursor: pointer; }
+    
+    .chat-header { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      padding: 20px; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      font-weight: 600;
+      font-size: 16px;
+    }
+    
+    .chat-messages { 
+      flex: 1; 
+      padding: 20px; 
+      overflow-y: auto; 
+      background: linear-gradient(to bottom, #f8f9ff 0%, #ffffff 100%);
+      display: flex; 
+      flex-direction: column; 
+      gap: 12px; 
+    }
+    
+    .chat-input-area { 
+      padding: 15px; 
+      border-top: 1px solid #e8e8e8; 
+      display: flex; 
+      gap: 10px; 
+      background: white; 
+    }
+    
+    #chat-input { 
+      flex: 1; 
+      padding: 12px 16px; 
+      border-radius: 25px; 
+      border: 2px solid #e8e8e8; 
+      outline: none;
+      font-size: 14px;
+      transition: border 0.3s;
+    }
+    
+    #chat-input:focus {
+      border-color: #667eea;
+    }
+    
+    #send-btn { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border: none; 
+      color: white; 
+      font-weight: 600; 
+      cursor: pointer;
+      padding: 12px 20px;
+      border-radius: 25px;
+      transition: all 0.3s;
+    }
+    
+    #send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
     
     /* MESSAGES */
-    .message { max-width: 80%; padding: 10px; border-radius: 8px; font-size: 14px; line-height: 1.4; }
-    .bot-msg { background: white; border: 1px solid #e0e0e0; align-self: flex-start; color: #333; }
-    .user-msg { background: #0066cc; color: white; align-self: flex-end; }
+    .message { 
+      max-width: 85%; 
+      padding: 12px 16px; 
+      border-radius: 16px; 
+      font-size: 14px; 
+      line-height: 1.5;
+      animation: slideIn 0.3s ease;
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bot-msg { 
+      background: white;
+      border: 1px solid #e8e8e8; 
+      align-self: flex-start; 
+      color: #333;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    
+    .user-msg { 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white; 
+      align-self: flex-end;
+      box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    }
     
     /* EXTRAS */
-    .action-btn { background: white; border: 1px solid #0066cc; color: #0066cc; padding: 6px 12px; border-radius: 15px; margin: 2px; cursor: pointer; font-size: 12px; }
-    .action-btn:hover { background: #0066cc; color: white; }
-    .img-preview { max-width: 100%; border-radius: 5px; margin-top: 5px; border: 1px solid #ccc; }
-    .spinner { border: 3px solid #f3f3f3; border-top: 3px solid #0066cc; border-radius: 50%; width: 20px; height: 20px; animation: spin 1s linear infinite; margin: 10px auto; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .action-btn { 
+      background: white;
+      border: 2px solid #667eea; 
+      color: #667eea; 
+      padding: 10px 18px; 
+      border-radius: 20px; 
+      margin: 4px; 
+      cursor: pointer; 
+      font-size: 13px;
+      font-weight: 600;
+      transition: all 0.3s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .action-btn:hover { 
+      background: #667eea; 
+      color: white;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+    }
+    
+    .img-preview { 
+      max-width: 100%; 
+      border-radius: 12px; 
+      margin-top: 8px; 
+      border: 1px solid #e8e8e8;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .spinner { 
+      border: 3px solid #f3f3f3; 
+      border-top: 3px solid #667eea; 
+      border-radius: 50%; 
+      width: 24px; 
+      height: 24px; 
+      animation: spin 1s linear infinite; 
+      margin: 10px auto; 
+    }
+    
+    @keyframes spin { 
+      0% { transform: rotate(0deg); } 
+      100% { transform: rotate(360deg); } 
+    }
+    
+    .welcome-banner {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 20px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    
+    .welcome-banner h3 {
+      margin: 0 0 8px 0;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    
+    .welcome-banner p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.95;
+    }
   `;
 
   // --- 2. INJECT CSS INTO THE PAGE ---
@@ -52,15 +199,15 @@
   const container = document.createElement('div');
   container.id = 'tradevision-root';
   container.innerHTML = `
-    <button id="trade-widget-launcher">💬</button>
+    <button id="trade-widget-launcher">🎨</button>
     <div id="trade-chat-window">
       <div class="chat-header">
-        <span>TradeVision Assistant</span>
+        <span>✨ RenoVision AI</span>
         <span style="cursor:pointer;" id="close-chat-btn">✕</span>
       </div>
       <div class="chat-messages" id="chat-messages"></div>
       <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Type a message...">
+        <input type="text" id="chat-input" placeholder="Describe your vision...">
         <button id="send-btn">Send</button>
       </div>
       <input type="file" id="image-upload" accept="image/*" style="display: none;">
@@ -115,32 +262,34 @@
     }
 
     function initChat() {
-        addMessage("Hi! I'm the AI assistant. How can I help you today?", 'bot');
+        // Welcome banner
+        const welcomeHtml = `
+          <div class="welcome-banner">
+            <h3>✨ AI Renovation Visualizer</h3>
+            <p>Transform your space in seconds with AI-powered previews</p>
+          </div>
+        `;
+        addMessage(welcomeHtml, 'bot');
+        
         setTimeout(() => {
-            addMessage(`
-              <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                <button class="action-btn" id="btn-renovate">Visualise Renovation 🏠</button>
-                <button class="action-btn" id="btn-support">Ask a Question ❓</button>
-              </div>
-            `, 'bot');
+            addMessage("Ready to see your renovation come to life? Let's get started! 🎨", 'bot');
             setTimeout(() => {
-                const rBtn = document.getElementById('btn-renovate');
-                const sBtn = document.getElementById('btn-support');
-                if(rBtn) rBtn.onclick = startRenovation;
-                if(sBtn) sBtn.onclick = handleSupport;
-            }, 100);
-        }, 500);
-    }
-
-    function handleSupport() {
-        chatState = 'support';
-        addMessage("Sure, ask me anything about our services.", 'bot');
+                addMessage(`<button class="action-btn" id="btn-renovate">📸 Start Visualization</button>`, 'bot');
+                setTimeout(() => {
+                    const rBtn = document.getElementById('btn-renovate');
+                    if(rBtn) rBtn.onclick = startRenovation;
+                }, 100);
+            }, 600);
+        }, 400);
     }
 
     function startRenovation() {
         chatState = 'awaiting_photo';
-        addMessage("Let's visualize! Please upload a clear photo of the area.", 'bot');
-        addMessage(`<button class="action-btn" onclick="document.getElementById('image-upload').click()">📁 Click to Upload Photo</button>`, 'bot');
+        addMessage("Perfect! First, please <b>upload a clear photo</b> of the area you'd like to renovate (e.g., roof, kitchen, exterior). 📷", 'bot');
+        
+        setTimeout(() => {
+            addMessage(`<button class="action-btn" onclick="document.getElementById('image-upload').click()">📁 Choose Photo</button>`, 'bot');
+        }, 500);
     }
 
     fileInput.onchange = (e) => {
@@ -151,8 +300,13 @@
             reader.onload = (ev) => {
                 userData.photo = ev.target.result; // Keep as Base64 string for Nano Banana
                 addMessage(userData.photo, 'user', true);
-                addMessage("Great photo! What would you like to change?", 'bot');
-                chatState = 'awaiting_prompt';
+                setTimeout(() => {
+                    addMessage("Excellent! Now tell me what you'd like to change. 💭", 'bot');
+                    setTimeout(() => {
+                        addMessage("<i>Examples: 'Change roof to slate gray', 'Modern white kitchen', 'Add brick facade'</i>", 'bot');
+                        chatState = 'awaiting_prompt';
+                    }, 400);
+                }, 500);
             };
             reader.readAsDataURL(file);
         }
@@ -164,10 +318,7 @@
         addMessage(text, 'user');
         inputEl.value = '';
 
-        if(chatState === 'support') {
-            setTimeout(() => addMessage("Thanks for asking. Please call us at 01234 567890 for a quote.", 'bot'), 1000);
-        }
-        else if(chatState === 'awaiting_prompt') {
+        if(chatState === 'awaiting_prompt') {
             userData.prompt = text;
             processPreview();
         } 
@@ -270,17 +421,24 @@
                 })
             });
             
-            addMessage(`✅ <b>Sent!</b> We've emailed a copy to <b>${userData.email}</b>.`, 'bot');
-            addMessage(`Your Reference: <b>${refNum}</b><br>Please quote this when calling us at <b>${contactNum}</b>.`, 'bot');
+            addMessage(`✅ <b>Perfect!</b> We've sent everything to <b>${userData.email}</b>`, 'bot');
+            addMessage(`📋 Your Reference: <b>${refNum}</b><br><small>Quote this when contacting us at <b>${contactNum}</b></small>`, 'bot');
 
             setTimeout(() => {
-                addMessage(`<button class="action-btn" onclick="location.reload()">Start Over 🔄</button>`, 'bot');
+                addMessage(`
+                    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-top:5px;">
+                        <button class="action-btn" onclick="location.reload()">🔄 Visualize Another</button>
+                    </div>
+                `, 'bot');
                 chatState = 'initial';
-            }, 4000);
+            }, 2000);
 
         } catch(e) {
             console.error(e);
-            addMessage(`✅ <b>Sent!</b> (Ref: ${refNum})`, 'bot');
+            addMessage(`✅ <b>Sent!</b> Reference: ${refNum}`, 'bot');
+            setTimeout(() => {
+                addMessage(`<button class="action-btn" onclick="location.reload()">🔄 Start Over</button>`, 'bot');
+            }, 2000);
         }
     }
 
