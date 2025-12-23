@@ -78,7 +78,10 @@
     const sendBtn = document.getElementById('send-btn');
     const fileInput = document.getElementById('image-upload');
     
-    const API_BASE = "https://renovision-1.onrender.com"; 
+    // IMPORTANT: Update this to your actual backend URL
+    // For local testing with app.py, use: http://localhost:10000
+    // For production, use: https://renovision-1.onrender.com
+    const API_BASE = "http://localhost:10000"; 
     const MAKE_WEBHOOK = "https://hook.eu1.make.com/tbw4om63qcv46ey6uph92pgpnhudi6ys"; 
 
     let chatState = 'initial';
