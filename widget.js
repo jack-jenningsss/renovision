@@ -423,7 +423,6 @@
                 })
             });
             
-            
             addMessage(`✅ <b>Perfect!</b> We've sent everything to <b>${userData.email}</b>`, 'bot');
             addMessage(`📋 Your Reference: <b>${refNum}</b><br><small>Quote this when contacting us at <b>${contactNum}</b></small>`, 'bot');
 
