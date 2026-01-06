@@ -416,11 +416,13 @@
                 body: JSON.stringify({
                     email: userData.email,
                     image_url: userData.generatedImage,
+                    photo: userData.photo,  // ADD THIS LINE - original image (base64)
                     prompt: userData.prompt,
                     reference: refNum,
                     contact: contactNum
                 })
             });
+            
             
             addMessage(`✅ <b>Perfect!</b> We've sent everything to <b>${userData.email}</b>`, 'bot');
             addMessage(`📋 Your Reference: <b>${refNum}</b><br><small>Quote this when contacting us at <b>${contactNum}</b></small>`, 'bot');
