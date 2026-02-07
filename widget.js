@@ -200,7 +200,7 @@
   const container = document.createElement('div');
   container.id = 'tradevision-root';
   container.innerHTML = `
-    <button id="trade-widget-launcher">🎨</button>
+    <button id="trade-widget-launcher">🏡</button>
     <div id="trade-chat-window">
       <div class="chat-header">
         <span>✨ RenoVision AI</span>
@@ -273,7 +273,7 @@
         addMessage(welcomeHtml, 'bot');
         
         setTimeout(() => {
-            addMessage("Ready to see your renovation come to life? Let's get started! 🎨", 'bot');
+            addMessage("Ready to see your renovation come to life? Let's get started! 🏡", 'bot');
             setTimeout(() => {
                 addMessage(`<button class="action-btn" id="btn-renovate">📸 Start Visualization</button>`, 'bot');
                 setTimeout(() => {
