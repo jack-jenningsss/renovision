@@ -8,9 +8,9 @@ from urllib.parse import urljoin
 import time
 
 # --- 1. CONFIGURATION ---
-INPUT_CSV = 'companies_bathrooms.csv'         # The file you get from Google Maps
+INPUT_CSV = 'companies_roofing_hartlepool.csv'         # The file you get from Google Maps
 GOOGLE_SHEET_NAME = "Renovision Leads" # Matches your actual Google Sheet Name
-TARGET_SERVICE = "Bathroom"          # The niche you are targeting
+TARGET_SERVICE = "Roofing"          # The niche you are targeting
 COMPANIES_HOUSE_API_KEY = "8a046685-eeee-4f76-8f98-817bc7430ca7" # ⚠️ PASTE YOUR KEY HERE
 
 # --- 2. EMAIL EXTRACTOR ---
